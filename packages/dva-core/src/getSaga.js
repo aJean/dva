@@ -55,7 +55,7 @@ function getWatcher(key, _effect, model, onError, onEffect, opts) {
       args.length > 0 ? args[0] : {};
     try {
       yield sagaEffects.put({ type: `${key}${NAMESPACE_SEP}@@start` });
-      // 为 model.effects.fn 注入参数
+      // 为 model.effects.fn 注入参数： action 、sagaEffects
       const ret = yield effect(...args.concat(createEffects(model, opts)));
       yield sagaEffects.put({ type: `${key}${NAMESPACE_SEP}@@end` });
       resolve(ret);
@@ -113,6 +113,7 @@ function getWatcher(key, _effect, model, onError, onEffect, opts) {
   }
 }
 
+// 在 model.effects 内部使用 put 不用传递 namespace
 function createEffects(model, opts) {
   function assertAction(type, name) {
     invariant(type, 'dispatch: action should be a plain Object with type');
