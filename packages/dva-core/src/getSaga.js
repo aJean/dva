@@ -4,6 +4,7 @@ import { effects as sagaEffects } from 'redux-saga';
 import { NAMESPACE_SEP } from './constants';
 import prefixType from './prefixType';
 
+// runSaga 时候执行，收集 model 上的所有 effect
 export default function getSaga(effects, model, onError, onEffect, opts = {}) {
   return function*() {
     for (const key in effects) {
@@ -11,6 +12,7 @@ export default function getSaga(effects, model, onError, onEffect, opts = {}) {
         const watcher = getWatcher(key, effects[key], model, onError, onEffect, opts);
         const task = yield sagaEffects.fork(watcher);
         yield sagaEffects.fork(function*() {
+          // 取消 model effect，dispatch({type:${model.namespace}/@@CANCEL_EFFECTS})
           yield sagaEffects.take(`${model.namespace}/@@CANCEL_EFFECTS`);
           yield sagaEffects.cancel(task);
         });
@@ -52,22 +54,27 @@ function getWatcher(key, _effect, model, onError, onEffect, opts) {
       args.length > 0 ? args[0] : {};
     try {
       yield sagaEffects.put({ type: `${key}${NAMESPACE_SEP}@@start` });
+      // 为 model.effects.fn 注入参数
       const ret = yield effect(...args.concat(createEffects(model, opts)));
       yield sagaEffects.put({ type: `${key}${NAMESPACE_SEP}@@end` });
       resolve(ret);
     } catch (e) {
+      // 可以处理所有 effect 的异常
       onError(e, {
         key,
         effectArgs: args,
       });
+      // 是否要触发 promise 的异常，dispatch('XXX').catch()
       if (!e._dontReject) {
         reject(e);
       }
     }
   }
 
+  // 触发 onEffect 钩子，warp effect
   const sagaWithOnEffect = applyOnEffect(onEffect, sagaWithCatch, model, key);
 
+  // 监听 action，默认使用 take every
   switch (type) {
     case 'watcher':
       return sagaWithCatch;
@@ -99,6 +106,7 @@ function getWatcher(key, _effect, model, onError, onEffect, opts) {
       };
     default:
       return function*() {
+        // 监听 model.effects.key
         yield sagaEffects.takeEvery(key, sagaWithOnEffect);
       };
   }
@@ -159,6 +167,7 @@ function createEffects(model, opts) {
   return { ...sagaEffects, put, take };
 }
 
+// 洋葱模型 middleware
 function applyOnEffect(fns, effect, model, key) {
   for (const fn of fns) {
     effect = fn(effect, sagaEffects, model, key);

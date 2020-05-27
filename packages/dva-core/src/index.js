@@ -40,6 +40,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     _models: [prefixNamespace({ ...dvaModel })],
     _store: null,
     _plugin: plugin,
+    // 绑定 pligin.use
     use: plugin.use.bind(plugin),
     model,
     start,
@@ -160,6 +161,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     const onError = (err, extension) => {
       if (err) {
         if (typeof err === 'string') err = new Error(err);
+        // 阻止 dispatch 的 promise
         err.preventDefault = () => {
           err._dontReject = true;
         };

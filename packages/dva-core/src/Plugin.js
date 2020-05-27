@@ -31,6 +31,7 @@ export default class Plugin {
     }, {});
   }
 
+  // 缓存 plugin 主要是 onEffect
   use(plugin) {
     invariant(isPlainObject(plugin), 'plugin.use: plugin should be plain object');
     const { hooks } = this;
