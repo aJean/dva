@@ -294,6 +294,7 @@ describe('effects', () => {
     expect(app._store.getState().err[0].effectArgs[0].payload).toEqual('err.payload');
   });
 
+  // takeEvery 之外的监听类型调用方式，见 getWatcher
   it('type: takeLatest', done => {
     const app = create();
     const takeLatest = { type: 'takeLatest' };

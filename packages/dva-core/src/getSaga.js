@@ -27,6 +27,7 @@ function getWatcher(key, _effect, model, onError, onEffect, opts) {
   let ms;
   let delayMs;
 
+  // 支持不同的 type，effect 传入数组
   if (Array.isArray(_effect)) {
     [effect] = _effect;
     const opts = _effect[1];
