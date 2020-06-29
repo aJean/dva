@@ -21,6 +21,9 @@ export default function getSaga(effects, model, onError, onEffect, opts = {}) {
   };
 }
 
+/**
+ * 给 model 上的每一个 effect 生成 watcher，返回的是一个 saga function，在外部一起执行 runSaga
+ */
 function getWatcher(key, _effect, model, onError, onEffect, opts) {
   let effect = _effect;
   let type = 'takeEvery';
