@@ -73,6 +73,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     m = model(m);
 
     const store = app._store;
+    // 这会属性会被 createReducer 使用，保证每次 inject 都重新生成全局的 reducers
     store.asyncReducers[m.namespace] = getReducer(m.reducers, m.state, plugin._handleActions);
     store.replaceReducer(createReducer());
     if (m.effects) {
@@ -180,6 +181,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     for (const m of app._models) {
       reducers[m.namespace] = getReducer(m.reducers, m.state, plugin._handleActions);
       if (m.effects) {
+        // 把所有的 onEffect hooks 都拿到，对每一个 model 的 effect 进行绑定
         sagas.push(app._getSaga(m.effects, m, onError, plugin.get('onEffect'), hooksAndOpts));
       }
     }
@@ -236,9 +238,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     app.replaceModel = replaceModel.bind(app, createReducer, reducers, unlisteners, onError);
 
     /**
-     * Create global reducer for redux.
-     *
-     * @returns {Object}
+     * 全局 reducer，每次注入一个 model，store 上的 reducers 都会被替换
      */
     function createReducer() {
       return reducerEnhancer(

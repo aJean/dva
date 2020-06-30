@@ -31,7 +31,7 @@ export default class Plugin {
     }, {});
   }
 
-  // 缓存 plugin 主要是 onEffect
+  // 缓存 plugin 主要是 onEffect 和 extraReducers
   use(plugin) {
     invariant(isPlainObject(plugin), 'plugin.use: plugin should be plain object');
     const { hooks } = this;
@@ -40,9 +40,11 @@ export default class Plugin {
         invariant(hooks[key], `plugin.use: unknown plugin property: ${key}`);
         if (key === '_handleActions') {
           this._handleActions = plugin[key];
+        // 会作为 createStore 的 enhancers
         } else if (key === 'extraEnhancers') {
           hooks[key] = plugin[key];
         } else {
+          // 例如会把不同插件的 onEffect 保存成数组
           hooks[key].push(plugin[key]);
         }
       }

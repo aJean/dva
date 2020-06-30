@@ -16,6 +16,7 @@ function createLoading(opts = {}) {
     effects: {},
   };
 
+  // 会执行 combineReducers
   const extraReducers = {
     [namespace](state = initialState, { type, payload }) {
       const { namespace, actionType } = payload || {};
@@ -67,6 +68,7 @@ function createLoading(opts = {}) {
     ) {
       return function*(...args) {
         yield put({ type: SHOW, payload: { namespace, actionType } });
+        // sagaWithCatch
         yield effect(...args);
         yield put({ type: HIDE, payload: { namespace, actionType } });
       };
