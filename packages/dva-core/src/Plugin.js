@@ -81,6 +81,9 @@ export default class Plugin {
   }
 }
 
+/**
+ * 把 extraReducers 组成一个对象
+ */
 function getExtraReducers(hook) {
   let ret = {};
   for (const reducerObj of hook) {

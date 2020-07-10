@@ -185,6 +185,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
         sagas.push(app._getSaga(m.effects, m, onError, plugin.get('onEffect'), hooksAndOpts));
       }
     }
+    // 说明插件要在 start 之前加载，extraReducers 不会再变了
     const reducerEnhancer = plugin.get('onReducer');
     const extraReducers = plugin.get('extraReducers');
     invariant(
