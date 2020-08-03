@@ -133,6 +133,7 @@ function createEffects(model, opts) {
   function put(action) {
     const { type } = action;
     assertAction(type, 'sagaEffects.put');
+    // 给 put action 加上 model 的 namespace
     return sagaEffects.put({ ...action, type: prefixType(type, model) });
   }
 
