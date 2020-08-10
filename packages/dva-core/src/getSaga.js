@@ -53,6 +53,10 @@ function getWatcher(key, _effect, model, onError, onEffect, opts) {
 
   function noop() {}
 
+  /**
+   * resolve 来自 umi 的 dispatch 返回的是 promise，这块没看但应该是对 store.dispatch 做了封装
+   * 把 promise 的 resolve、reject 放到了 action 对象里
+   */
   function* sagaWithCatch(...args) {
     const { __dva_resolve: resolve = noop, __dva_reject: reject = noop } =
       args.length > 0 ? args[0] : {};
@@ -116,7 +120,10 @@ function getWatcher(key, _effect, model, onError, onEffect, opts) {
   }
 }
 
-// 在 model.effects 内部使用 put 不用传递 namespace
+/**
+ * 创建 model.effects 执行时的第2个参数对象，第一个是 action
+ * 注意 effect 内部使用 put 不用传递 namespace
+ */ 
 function createEffects(model, opts) {
   function assertAction(type, name) {
     invariant(type, 'dispatch: action should be a plain Object with type');
