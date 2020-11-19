@@ -35,6 +35,7 @@ export default function(opts = {}) {
   };
 
   const app = create(opts, createOpts);
+  // dva-core start
   const oldAppStart = app.start;
   app.router = router;
   app.start = start;
