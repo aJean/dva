@@ -178,6 +178,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
 
     const sagas = [];
     const reducers = { ...initialReducer };
+    // 这个是在 start 之前注册的
     for (const m of app._models) {
       reducers[m.namespace] = getReducer(m.reducers, m.state, plugin._handleActions);
       if (m.effects) {
@@ -233,7 +234,7 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
       }
     }
 
-    // Setup app.model and app.unmodel
+    // Setup app.model and app.unmodel，start 之后还要 replace reducers
     app.model = injectModel.bind(app, createReducer, onError, unlisteners);
     app.unmodel = unmodel.bind(app, createReducer, reducers, unlisteners);
     app.replaceModel = replaceModel.bind(app, createReducer, reducers, unlisteners, onError);
@@ -244,8 +245,11 @@ export function create(hooksAndOpts = {}, createOpts = {}) {
     function createReducer() {
       return reducerEnhancer(
         combineReducers({
+          // 这部分是 start 之前从 models 里收集到的
           ...reducers,
+          // 这是插件的
           ...extraReducers,
+          // 这部分是 start 之后用户注册的
           ...(app._store ? app._store.asyncReducers : {}),
         }),
       );

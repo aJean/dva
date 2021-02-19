@@ -41,6 +41,7 @@ export default function(opts = {}) {
   app.start = start;
   return app;
 
+  // 留给外部调用，注册 routes
   function router(router) {
     invariant(
       isFunction(router),
@@ -92,6 +93,9 @@ function isString(str) {
   return typeof str === 'string';
 }
 
+/**
+ * umi 中返回的就是一个 provider
+ */
 function getProvider(store, app, router) {
   const DvaRoot = extraProps => (
     <Provider store={store}>{router({ app, history: app._history, ...extraProps })}</Provider>

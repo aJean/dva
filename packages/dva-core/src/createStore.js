@@ -31,6 +31,7 @@ export default function({
       ? win.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({ trace: true, maxAge: 30 })
       : compose;
 
+  // enhancers 就是对 store 的一次增强，persistEnhancer 就在这里传入
   const enhancers = [applyMiddleware(...middlewares), ...extraEnhancers];
 
   return createStore(reducers, initialState, composeEnhancers(...enhancers));
