@@ -13,6 +13,7 @@ const hooks = [
   '_handleActions',
 ];
 
+// 只保留内部存在的 hooks handle
 export function filterHooks(obj) {
   return Object.keys(obj).reduce((memo, key) => {
     if (hooks.indexOf(key) > -1) {
@@ -51,6 +52,9 @@ export default class Plugin {
     }
   }
 
+  /**
+   * 运行内部插件方法
+   */
   apply(key, defaultHandler) {
     const { hooks } = this;
     const validApplyHooks = ['onError', 'onHmr'];
